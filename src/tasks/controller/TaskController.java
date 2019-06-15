@@ -55,7 +55,7 @@ public class TaskController {
 		
 		model.addAttribute("tasks", tasks);
 		
-		return "task/get-tasks-ajax2";
+		return "task/get-tasks-ajax4";
 	}
 	
 	@RequestMapping("buscartask")
@@ -73,9 +73,13 @@ public class TaskController {
 		return "redirect:gettasks";
 	}
 	
-	@ResponseBody
+//	@ResponseBody // Essa anotacao entraria em conflito com o Model que esta sendo utilizado
 	@RequestMapping("finalizatask")
-	public void finaliza(Long id) {
+	public String finaliza(Long id, Model model) {
 		dao.finaliza(id);
+		
+		model.addAttribute("task", dao.getById(id));
+		
+		return "task/data-finalizada2";
 	}
 }

@@ -2,6 +2,7 @@ package tasks.controller;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -11,6 +12,13 @@ import tasks.model.Usuario;
 @Controller
 public class LoginController {
 	
+	private UsuarioDao dao;
+	
+	@Autowired
+	public LoginController(UsuarioDao dao) {
+		this.dao = dao;
+	}
+	
 	@RequestMapping("formlogin")
 	public String formLogin() {
 		return "task/form-login";
@@ -18,7 +26,7 @@ public class LoginController {
 	
 	@RequestMapping("getlogin")
 	public String getLogin(Usuario usuario, HttpSession session) {
-		if(new UsuarioDao().existeUsuario(usuario)) {
+		if(dao.existeUsuario(usuario)) {
 			session.setAttribute("usuariologado", usuario);
 			
 			System.out.println("Usuario logado " + usuario.getLogin());

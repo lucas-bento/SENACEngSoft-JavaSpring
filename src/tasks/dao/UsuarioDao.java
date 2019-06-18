@@ -1,43 +1,41 @@
 package tasks.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
-import tasks.jdbc.ConnectionFactory;
+import org.springframework.stereotype.Repository;
+
 import tasks.model.Usuario;
 
+@Repository
 public class UsuarioDao {
-	private Connection connection;
 
-	public UsuarioDao() {
-		try {
-			connection = new ConnectionFactory().getConnection();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	@PersistenceContext
+	private EntityManager entityManager;
+
 
 	public boolean existeUsuario(Usuario usuario) {
 		
 		if(usuario == null) {
-			throw new IllegalArgumentException("Usuário não pode ser nulo");
+			throw new IllegalArgumentException("Usuario nao pode ser nulo");
 		}
 		
 		try {
-			PreparedStatement stmt = this.connection.prepareStatement("select * from usuarios where login = ? and senha = ?");
-			stmt.setString(1, usuario.getLogin());
-			stmt.setString(2, usuario.getSenha());
-			ResultSet rs = stmt.executeQuery();
-
-			boolean encontrado = rs.next();
-			rs.close();
-			stmt.close();
-
-			return encontrado;
-		} catch (SQLException e) {
+			Query query = entityManager.createQuery("from Usuario u where u.login = :login and u.senha = :senha");
+			query.setParameter("login", usuario.getLogin());
+			query.setParameter("senha", usuario.getSenha());
+			
+			Object result = query.getSingleResult();
+			
+			return result != null;
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 }

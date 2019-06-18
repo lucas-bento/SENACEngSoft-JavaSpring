@@ -9,38 +9,44 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import tasks.model.Task;
 
 @Repository
 public class TaskDao {
-
-	private final Connection connection;
-
-	@Autowired
-	public TaskDao(@Qualifier("MariaDbDataSource") DataSource dataSource) {
-		try {
-			this.connection = dataSource.getConnection();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	
+	@PersistenceContext
+	EntityManager entityManager;
+
+	private Connection connection;
+
+//		try {
+////			this.connection = dataSource.getConnection();
+//		} catch (SQLException e) {
+//			throw new RuntimeException(e);
+//		}
+//	}
+
+	@Transactional
 	public void inserir(Task task) {
-		String sql = "insert into tasks (descricao, finalizada) values (?,?)";
-		PreparedStatement stmt;
+//		String sql = "insert into tasks (descricao, finalizada) values (?,?)";
+//		PreparedStatement stmt;
 		try {
-			stmt = connection.prepareStatement(sql);
-			stmt.setString(1, task.getDescricao());
-			stmt.setBoolean(2, task.isFinalizada());
-			stmt.execute();
-		} catch (SQLException e) {
+//			stmt = connection.prepareStatement(sql);
+//			stmt.setString(1, task.getDescricao());
+//			stmt.setBoolean(2, task.isFinalizada());
+//			stmt.execute();
+			
+			entityManager.persist(task);
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}		
 	}
@@ -83,7 +89,7 @@ public class TaskDao {
 
 	public void exclui(Task task) {
 		if(task.getId() == null) {
-			throw new IllegalStateException("Id da task não deve ser nula.");
+			throw new IllegalStateException("Id da task nï¿½o deve ser nula.");
 		}
 		String sql = "delete from tasks where id = ?";
 		PreparedStatement stmt;
@@ -99,7 +105,7 @@ public class TaskDao {
 
 	public Task getById(Long id) {
 		if(id == null) {
-			throw new IllegalStateException("Id da task não deve ser nula.");
+			throw new IllegalStateException("Id da task nï¿½o deve ser nula.");
 		}
 		try {
 			PreparedStatement stmt = this.connection.prepareStatement("select * from tasks where id = ?");
@@ -135,7 +141,7 @@ public class TaskDao {
 
 	public void finaliza(Long id) {
 		if(id == null) {
-			throw new IllegalStateException("Id da task não deve ser nula.");
+			throw new IllegalStateException("Id da task nï¿½o deve ser nula.");
 		}
 		String sql = "update tasks set finalizada = ?, dataFinalizacao = ? where id = ?";
 		PreparedStatement stmt;

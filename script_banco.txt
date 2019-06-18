@@ -1,10 +1,4 @@
-create table tasks (
-	id BIGINT NOT NULL AUTO_INCREMENT,
-	descricao VARCHAR(255),
-	finalizada BOOLEAN,
-	dataFinalizacao DATE,
-	primary key (id)
-);
+create table tasks (	id BIGINT NOT NULL AUTO_INCREMENT,	descricao VARCHAR(255),	finalizada BOOLEAN,	dataFinalizacao DATE,	primary key (id));
 
 create table usuarios (
 	login VARCHAR(255),
